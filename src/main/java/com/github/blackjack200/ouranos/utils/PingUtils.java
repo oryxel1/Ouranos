@@ -1,6 +1,5 @@
 package com.github.blackjack200.ouranos.utils;
 
-import com.github.blackjack200.ouranos.Ouranos;
 import io.netty.channel.ChannelFutureListener;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;

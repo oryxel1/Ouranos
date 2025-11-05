@@ -1,6 +1,5 @@
 package com.github.blackjack200.ouranos.data.bedrock;
 
-import com.github.blackjack200.ouranos.Ouranos;
 import com.github.blackjack200.ouranos.data.bedrock.block.BlockIdMetaUpgrader;
 import com.github.blackjack200.ouranos.utils.BinaryStream;
 import lombok.SneakyThrows;

@@ -1,6 +1,5 @@
 package com.github.blackjack200.ouranos.network.session;
 
-import com.github.blackjack200.ouranos.Ouranos;
 import com.github.blackjack200.ouranos.utils.EncUtils;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -16,7 +15,6 @@ import org.cloudburstmc.protocol.bedrock.netty.codec.encryption.BedrockEncryptio
 import org.cloudburstmc.protocol.bedrock.netty.codec.encryption.BedrockEncryptionEncoder;
 import org.cloudburstmc.protocol.bedrock.netty.codec.packet.BedrockPacketCodec;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
-import org.cloudburstmc.protocol.bedrock.util.EncryptionUtils;
 
 import javax.crypto.SecretKey;
 import java.net.SocketException;

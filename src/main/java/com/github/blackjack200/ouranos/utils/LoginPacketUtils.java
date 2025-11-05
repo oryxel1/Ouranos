@@ -1,7 +1,6 @@
 package com.github.blackjack200.ouranos.utils;
 
 
-import com.github.blackjack200.ouranos.Ouranos;
 import com.github.blackjack200.ouranos.network.session.AuthData;
 import com.github.blackjack200.ouranos.network.session.OuranosProxySession;
 import com.nimbusds.jose.JWSAlgorithm;

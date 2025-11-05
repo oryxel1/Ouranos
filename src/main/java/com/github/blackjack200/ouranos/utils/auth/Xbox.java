@@ -1,7 +1,6 @@
 package com.github.blackjack200.ouranos.utils.auth;
 
 import cn.hutool.core.io.IoUtil;
-import com.github.blackjack200.ouranos.Ouranos;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
