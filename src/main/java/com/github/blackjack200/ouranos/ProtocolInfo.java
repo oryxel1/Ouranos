@@ -1,7 +1,6 @@
 package com.github.blackjack200.ouranos;
 
 import com.github.blackjack200.ouranos.data.bedrock.GlobalItemDataHandlers;
-import lombok.extern.log4j.Log4j2;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
 import org.cloudburstmc.protocol.bedrock.codec.v361.Bedrock_v361;
 import org.cloudburstmc.protocol.bedrock.codec.v388.Bedrock_v388;
@@ -56,7 +55,6 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Log4j2
 public final class ProtocolInfo {
     private static final Set<BedrockCodec> PACKET_CODECS = ConcurrentHashMap.newKeySet();
     private static final Set<BedrockCodec> UNMODIFIABLE_PACKET_CODECS = Collections.unmodifiableSet(PACKET_CODECS);

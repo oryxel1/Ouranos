@@ -2,25 +2,19 @@ package com.github.blackjack200.ouranos.converter;
 
 import com.github.blackjack200.ouranos.data.AbstractMapping;
 import com.github.blackjack200.ouranos.utils.HashUtils;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.allaymc.updater.block.BlockStateUpdaters;
 import org.cloudburstmc.nbt.NbtList;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtUtils;
 
-import java.io.InputStreamReader;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Log4j2
 public final class BlockStateDictionary extends AbstractMapping {
     public static final class Dictionary {
         private final Map<Integer, BlockEntry> latestStateHashToEntry;

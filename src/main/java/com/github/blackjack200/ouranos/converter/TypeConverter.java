@@ -10,7 +10,6 @@ import io.netty.buffer.ByteBufOutputStream;
 import io.netty.util.ReferenceCountUtil;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
-import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtUtils;
@@ -26,7 +25,6 @@ import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.*;
 
 import java.util.ArrayList;
 
-@Log4j2
 @UtilityClass
 public class TypeConverter {
     public int[] translateItemRuntimeId(int input, int output, int runtimeId, int meta) {
@@ -215,7 +213,7 @@ public class TypeConverter {
             case 2://the_end
                 return 16;
             default:
-                log.debug("Unknown dimension for chunk bounds: {}", dimension);
+//                log.debug("Unknown dimension for chunk bounds: {}", dimension);
                 return protocol >= Bedrock_v503.CODEC.getProtocolVersion() ? 24 : 25;
         }
     }

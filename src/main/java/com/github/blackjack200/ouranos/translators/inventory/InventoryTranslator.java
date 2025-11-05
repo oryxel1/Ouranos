@@ -3,7 +3,6 @@ package com.github.blackjack200.ouranos.translators.inventory;
 import com.github.blackjack200.ouranos.session.OuranosSession;
 import com.github.blackjack200.ouranos.session.translator.BaseTranslator;
 import com.github.blackjack200.ouranos.translators.storages.ClientInventoryStorage;
-import lombok.extern.log4j.Log4j2;
 import org.cloudburstmc.protocol.bedrock.codec.v407.Bedrock_v407;
 import org.cloudburstmc.protocol.bedrock.data.inventory.*;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.ItemStackRequest;
@@ -21,11 +20,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Log4j2
 public class InventoryTranslator implements BaseTranslator {
     @Override
     public BedrockPacket translateClientbound(OuranosSession session, BedrockPacket bedrockPacket) {
-        final int input = session.getProtocolId(), output = session.getTargetVersion();
+        final int output = session.getTargetVersion();
 
         final ClientInventoryStorage storage = session.get(ClientInventoryStorage.class);
 
@@ -170,8 +168,8 @@ public class InventoryTranslator implements BaseTranslator {
                 return ContainerSlotType.ENCHANTING_INPUT;
             case ContainerId.ENCHANT_OUTPUT:
                 return ContainerSlotType.ENCHANTING_MATERIAL;
-            default:
-                log.error("Unknown container id: {}", containerId);
+            default: break;
+//                log.error("Unknown container id: {}", containerId);
         }
         return ContainerSlotType.UNKNOWN;
     }
@@ -194,8 +192,8 @@ public class InventoryTranslator implements BaseTranslator {
                 return ContainerId.ENCHANT_INPUT;
             case ENCHANTING_MATERIAL:
                 return ContainerId.ENCHANT_OUTPUT;
-            default:
-                log.error("Unknown container id: {}", containerId);
+            default: break;
+//                log.error("Unknown container id: {}", containerId);
         }
         return ContainerSlotType.UNKNOWN.ordinal();
     }

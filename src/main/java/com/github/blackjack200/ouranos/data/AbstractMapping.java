@@ -2,21 +2,19 @@ package com.github.blackjack200.ouranos.data;
 
 import cn.hutool.core.io.FileUtil;
 import com.github.blackjack200.ouranos.ProtocolInfo;
-import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.function.BiConsumer;
 
-@Log4j2
 public class AbstractMapping {
     protected static void load(String file, BiConsumer<Integer, InputStream> handler) {
         ProtocolInfo.getPacketCodecs().forEach((codec) -> {
             int protocolId = codec.getProtocolVersion();
             String name = lookupAvailableFile(file, protocolId);
             try (var rawData = open(name)) {
-                log.debug("Loading packet codec {} from {}", codec.getProtocolVersion(), name);
+//                log.debug("Loading packet codec {} from {}", codec.getProtocolVersion(), name);
                 handler.accept(protocolId, rawData);
             } catch (IOException e) {
                 throw new RuntimeException(e);

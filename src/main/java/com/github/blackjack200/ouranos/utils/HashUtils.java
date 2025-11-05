@@ -1,7 +1,6 @@
 package com.github.blackjack200.ouranos.utils;
 
 import lombok.experimental.UtilityClass;
-import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.nbt.NbtUtils;
@@ -15,7 +14,6 @@ import java.util.TreeMap;
  *
  * @author Cool_Loong | daoge_cmd
  */
-@Log4j2
 @UtilityClass
 public class HashUtils {
     //https://gist.github.com/Alemiz112/504d0f79feac7ef57eda174b668dd345
@@ -61,7 +59,6 @@ public class HashUtils {
             outputStream.writeTag(tag);
             bytes = stream.toByteArray();
         } catch (IOException e) {
-            log.error("Failed to covert NBT into bytes", e);
             throw new RuntimeException(e);
         }
 
