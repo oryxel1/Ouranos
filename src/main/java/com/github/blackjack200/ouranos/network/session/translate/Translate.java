@@ -1,10 +1,10 @@
 package com.github.blackjack200.ouranos.network.session.translate;
 
 import com.github.blackjack200.ouranos.network.ProtocolInfo;
-import com.github.blackjack200.ouranos.network.convert.ChunkRewriteException;
-import com.github.blackjack200.ouranos.network.convert.ItemTypeDictionary;
-import com.github.blackjack200.ouranos.network.convert.TypeConverter;
-import com.github.blackjack200.ouranos.network.convert.biome.BiomeDefinitionRegistry;
+import com.github.blackjack200.ouranos.converter.ChunkRewriteException;
+import com.github.blackjack200.ouranos.converter.ItemTypeDictionary;
+import com.github.blackjack200.ouranos.converter.TypeConverter;
+import com.github.blackjack200.ouranos.converter.biome.BiomeDefinitionRegistry;
 import com.github.blackjack200.ouranos.network.session.OuranosProxySession;
 import com.github.blackjack200.ouranos.utils.SimpleBlockDefinition;
 import io.netty.buffer.AbstractByteBufAllocator;

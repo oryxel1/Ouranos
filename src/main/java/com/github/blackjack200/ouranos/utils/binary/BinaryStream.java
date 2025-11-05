@@ -1,4 +1,6 @@
-package com.github.blackjack200.ouranos.utils;
+package com.github.blackjack200.ouranos.utils.binary;
+
+import com.github.blackjack200.ouranos.utils.VarInt;
 
 import java.io.IOException;
 import java.io.InputStream;

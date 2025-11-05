@@ -1,4 +1,4 @@
-package com.github.blackjack200.ouranos.network.convert.biome;
+package com.github.blackjack200.ouranos.converter.biome;
 
 import com.github.blackjack200.ouranos.data.AbstractMapping;
 import com.google.gson.Gson;

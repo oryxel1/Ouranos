@@ -1,7 +1,7 @@
 package com.github.blackjack200.ouranos.data.bedrock.block;
 
-import com.github.blackjack200.ouranos.network.convert.BlockStateDictionary;
-import com.github.blackjack200.ouranos.utils.BinaryStream;
+import com.github.blackjack200.ouranos.converter.BlockStateDictionary;
+import com.github.blackjack200.ouranos.utils.binary.BinaryStream;
 import com.github.blackjack200.ouranos.utils.HashUtils;
 import com.github.blackjack200.ouranos.utils.VarInt;
 import lombok.SneakyThrows;

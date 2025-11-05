@@ -1,6 +1,6 @@
-package com.github.blackjack200.ouranos.network.convert;
+package com.github.blackjack200.ouranos.converter;
 
-import com.github.blackjack200.ouranos.network.convert.palette.Palette;
+import com.github.blackjack200.ouranos.converter.palette.Palette;
 import io.netty.buffer.ByteBuf;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;

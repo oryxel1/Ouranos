@@ -4,7 +4,7 @@ import com.github.blackjack200.ouranos.data.bedrock.item.downgrade.ItemIdMetaDow
 import com.github.blackjack200.ouranos.data.bedrock.item.upgrade.ItemDataUpgrader;
 import com.github.blackjack200.ouranos.data.bedrock.item.upgrade.ItemIdMetaUpgradeSchemaUtils;
 import com.github.blackjack200.ouranos.data.bedrock.item.upgrade.ItemIdMetaUpgrader;
-import com.github.blackjack200.ouranos.network.convert.ItemTypeDictionary;
+import com.github.blackjack200.ouranos.converter.ItemTypeDictionary;
 import lombok.SneakyThrows;
 
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package com.github.blackjack200.ouranos.network.convert.bitarray;
+package com.github.blackjack200.ouranos.converter.bitarray;
 
 /**
  * @author JukeboxMC | daoge_cmd

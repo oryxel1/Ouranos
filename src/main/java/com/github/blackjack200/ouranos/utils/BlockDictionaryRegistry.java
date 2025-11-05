@@ -1,6 +1,6 @@
 package com.github.blackjack200.ouranos.utils;
 
-import com.github.blackjack200.ouranos.network.convert.BlockStateDictionary;
+import com.github.blackjack200.ouranos.converter.BlockStateDictionary;
 import lombok.val;
 import org.cloudburstmc.protocol.bedrock.data.definitions.BlockDefinition;
 import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleBlockDefinition;

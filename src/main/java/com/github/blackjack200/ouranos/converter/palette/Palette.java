@@ -1,7 +1,7 @@
-package com.github.blackjack200.ouranos.network.convert.palette;
+package com.github.blackjack200.ouranos.converter.palette;
 
-import com.github.blackjack200.ouranos.network.convert.bitarray.BitArray;
-import com.github.blackjack200.ouranos.network.convert.bitarray.BitArrayVersion;
+import com.github.blackjack200.ouranos.converter.bitarray.BitArray;
+import com.github.blackjack200.ouranos.converter.bitarray.BitArrayVersion;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
 import lombok.val;

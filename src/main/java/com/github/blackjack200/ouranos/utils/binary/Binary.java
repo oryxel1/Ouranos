@@ -1,4 +1,4 @@
-package com.github.blackjack200.ouranos.utils;
+package com.github.blackjack200.ouranos.utils.binary;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;

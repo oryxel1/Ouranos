@@ -1,4 +1,4 @@
-package com.github.blackjack200.ouranos.network.convert.biome;
+package com.github.blackjack200.ouranos.converter.biome;
 
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
 import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitions;

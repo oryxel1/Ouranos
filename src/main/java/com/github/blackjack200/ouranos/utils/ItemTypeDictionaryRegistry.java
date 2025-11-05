@@ -1,6 +1,6 @@
 package com.github.blackjack200.ouranos.utils;
 
-import com.github.blackjack200.ouranos.network.convert.ItemTypeDictionary;
+import com.github.blackjack200.ouranos.converter.ItemTypeDictionary;
 import org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition;
 import org.cloudburstmc.protocol.common.DefinitionRegistry;
 

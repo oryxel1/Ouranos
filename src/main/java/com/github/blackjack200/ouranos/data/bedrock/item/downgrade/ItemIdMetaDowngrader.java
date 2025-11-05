@@ -2,7 +2,7 @@ package com.github.blackjack200.ouranos.data.bedrock.item.downgrade;
 
 import cn.hutool.core.util.ArrayUtil;
 import com.github.blackjack200.ouranos.data.bedrock.GlobalItemDataHandlers;
-import com.github.blackjack200.ouranos.network.convert.ItemTypeDictionary;
+import com.github.blackjack200.ouranos.converter.ItemTypeDictionary;
 
 import java.util.HashMap;
 import java.util.Map;

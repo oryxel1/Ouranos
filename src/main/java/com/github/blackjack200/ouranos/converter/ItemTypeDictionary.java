@@ -1,4 +1,4 @@
-package com.github.blackjack200.ouranos.network.convert;
+package com.github.blackjack200.ouranos.converter;
 
 import com.github.blackjack200.ouranos.data.AbstractMapping;
 import com.github.blackjack200.ouranos.data.ItemTypeInfo;

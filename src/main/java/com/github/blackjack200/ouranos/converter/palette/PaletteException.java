@@ -1,6 +1,6 @@
-package com.github.blackjack200.ouranos.network.convert.palette;
+package com.github.blackjack200.ouranos.converter.palette;
 
-import com.github.blackjack200.ouranos.network.convert.ChunkRewriteException;
+import com.github.blackjack200.ouranos.converter.ChunkRewriteException;
 import lombok.experimental.StandardException;
 
 /**

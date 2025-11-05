@@ -1,7 +1,7 @@
-package com.github.blackjack200.ouranos.network.convert;
+package com.github.blackjack200.ouranos.converter;
 
 import com.github.blackjack200.ouranos.data.bedrock.GlobalItemDataHandlers;
-import com.github.blackjack200.ouranos.network.convert.palette.Palette;
+import com.github.blackjack200.ouranos.converter.palette.Palette;
 import com.github.blackjack200.ouranos.utils.SimpleBlockDefinition;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;

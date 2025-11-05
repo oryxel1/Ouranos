@@ -1,5 +1,7 @@
 package com.github.blackjack200.ouranos.utils;
 
+import com.github.blackjack200.ouranos.utils.binary.BinaryStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

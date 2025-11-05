@@ -1,4 +1,4 @@
-package com.github.blackjack200.ouranos.network.convert;
+package com.github.blackjack200.ouranos.converter;
 
 public class ChunkRewriteException extends Exception {
     public ChunkRewriteException(String message) {
