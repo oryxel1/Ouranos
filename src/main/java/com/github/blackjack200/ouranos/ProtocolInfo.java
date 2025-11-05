@@ -2,6 +2,7 @@ package com.github.blackjack200.ouranos;
 
 import com.github.blackjack200.ouranos.data.bedrock.GlobalItemDataHandlers;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
+import org.cloudburstmc.protocol.bedrock.codec.BedrockCodecHelper;
 import org.cloudburstmc.protocol.bedrock.codec.v361.Bedrock_v361;
 import org.cloudburstmc.protocol.bedrock.codec.v388.Bedrock_v388;
 import org.cloudburstmc.protocol.bedrock.codec.v389.Bedrock_v389;
@@ -50,6 +51,7 @@ import org.cloudburstmc.protocol.bedrock.codec.v818.Bedrock_v818;
 import org.cloudburstmc.protocol.bedrock.codec.v819.Bedrock_v819;
 import org.cloudburstmc.protocol.bedrock.codec.v827.Bedrock_v827;
 import org.cloudburstmc.protocol.bedrock.codec.v844.Bedrock_v844;
+import org.cloudburstmc.protocol.bedrock.data.EncodingSettings;
 
 import java.util.Collections;
 import java.util.Set;
@@ -149,7 +151,9 @@ public final class ProtocolInfo {
     }
 
     public static void addPacketCodec(BedrockCodec packetCodec, int schemaId) {
-        PACKET_CODECS.add(packetCodec);
+        BedrockCodecHelper helper = packetCodec.createHelper();
+        helper.setEncodingSettings(EncodingSettings.builder().maxListSize(Integer.MAX_VALUE).maxByteArraySize(Integer.MAX_VALUE).maxNetworkNBTSize(Integer.MAX_VALUE).maxItemNBTSize(Integer.MAX_VALUE).maxStringLength(Integer.MAX_VALUE).build());
+        PACKET_CODECS.add(packetCodec.toBuilder().helper(() -> helper).build());
         GlobalItemDataHandlers.SCHEMA_ID.put(packetCodec.getProtocolVersion(), schemaId);
     }
 
