@@ -1,11 +1,9 @@
 package com.github.blackjack200.ouranos.translators.storages;
 
-import com.github.blackjack200.ouranos.session.OuranosProxySession;
 import com.github.blackjack200.ouranos.session.OuranosSession;
 import com.github.blackjack200.ouranos.session.storage.OuranosStorage;
 import lombok.Getter;
 import lombok.Setter;
-import org.cloudburstmc.math.vector.Vector2f;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.protocol.bedrock.data.*;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.ItemStackRequest;
@@ -13,7 +11,6 @@ import org.cloudburstmc.protocol.bedrock.data.inventory.transaction.ItemUseTrans
 import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket;
 
 import java.util.ArrayDeque;
-import java.util.Objects;
 import java.util.Queue;
 
 @Getter
@@ -32,7 +29,7 @@ public class ClientMovementStorage extends OuranosStorage {
     private final Queue<PlayerBlockActionData> blockInteractions = new ArrayDeque<>(16);
     private final InputMode inputMode = InputMode.UNDEFINED;
 
-    public PlayerAuthInputPacket toAuthInput(OuranosProxySession player) {
+    public PlayerAuthInputPacket toAuthInput() {
         final PlayerAuthInputPacket packet = new PlayerAuthInputPacket();
         packet.setInputMode(this.inputMode);
         packet.setPosition(this.position);
@@ -55,18 +52,6 @@ public class ClientMovementStorage extends OuranosStorage {
             packet.getPlayerActions().addAll(this.blockInteractions);
             this.blockInteractions.clear();
         }
-
-        // TODO: This can be done better, we want to reach high accuracy because this matter!
-        packet.setDelta(Objects.requireNonNullElse(packet.getDelta(), Vector3f.ZERO));
-        packet.setMotion(Objects.requireNonNullElse(packet.getMotion(), Vector2f.ZERO));
-        packet.setRawMoveVector(Objects.requireNonNullElse(packet.getRawMoveVector(), Vector2f.ZERO));
-        packet.setInputMode(Objects.requireNonNullElse(packet.getInputMode(), this.inputMode));
-        packet.setPlayMode(Objects.requireNonNullElse(packet.getPlayMode(), ClientPlayMode.NORMAL));
-        packet.setInputInteractionModel(Objects.requireNonNullElse(packet.getInputInteractionModel(), InputInteractionModel.TOUCH));
-        packet.setAnalogMoveVector(Objects.requireNonNullElse(packet.getAnalogMoveVector(), Vector2f.ZERO));
-
-        packet.setInteractRotation(Objects.requireNonNullElse(packet.getInteractRotation(), Vector2f.ZERO));
-        packet.setCameraOrientation(Objects.requireNonNullElse(packet.getCameraOrientation(), Vector3f.ZERO));
         return packet;
     }
 }
