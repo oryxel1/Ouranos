@@ -22,7 +22,7 @@ public class MovementData {
     public Queue<PlayerBlockActionData> blocks = new ArrayDeque<>(16);
     public InputMode inputMode = InputMode.UNDEFINED;
 
-    public PlayerAuthInputPacket tick(int upstreamProtocolId, OuranosProxySession player) {
+    public PlayerAuthInputPacket tick(OuranosProxySession player) {
         var input = new PlayerAuthInputPacket();
         input.setInputMode(inputMode);
         input.setPosition(position);

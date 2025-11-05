@@ -1,7 +1,7 @@
 package com.github.blackjack200.ouranos.data;
 
 import cn.hutool.core.io.FileUtil;
-import com.github.blackjack200.ouranos.network.ProtocolInfo;
+import com.github.blackjack200.ouranos.ProtocolInfo;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;

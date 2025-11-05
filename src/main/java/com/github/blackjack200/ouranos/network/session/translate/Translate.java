@@ -1,6 +1,6 @@
 package com.github.blackjack200.ouranos.network.session.translate;
 
-import com.github.blackjack200.ouranos.network.ProtocolInfo;
+import com.github.blackjack200.ouranos.ProtocolInfo;
 import com.github.blackjack200.ouranos.converter.ChunkRewriteException;
 import com.github.blackjack200.ouranos.converter.ItemTypeDictionary;
 import com.github.blackjack200.ouranos.converter.TypeConverter;

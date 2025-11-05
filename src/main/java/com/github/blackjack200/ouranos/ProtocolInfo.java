@@ -1,4 +1,4 @@
-package com.github.blackjack200.ouranos.network;
+package com.github.blackjack200.ouranos;
 
 import com.github.blackjack200.ouranos.data.bedrock.GlobalItemDataHandlers;
 import lombok.extern.log4j.Log4j2;
