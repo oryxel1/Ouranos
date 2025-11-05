@@ -178,7 +178,7 @@ public abstract class OuranosSession {
 
     public BedrockPacket translateClientbound(BedrockPacket packet) {
         for (BaseTranslator translator : this.translators) {
-            packet = translator.translateServerbound(this, packet);
+            packet = translator.translateClientbound(this, packet);
             if (packet == null) {
                 break;
             }
