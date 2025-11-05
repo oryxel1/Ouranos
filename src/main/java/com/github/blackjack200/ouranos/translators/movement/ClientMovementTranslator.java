@@ -1,4 +1,4 @@
-package com.github.blackjack200.ouranos.translators;
+package com.github.blackjack200.ouranos.translators.movement;
 
 import com.github.blackjack200.ouranos.session.OuranosSession;
 import com.github.blackjack200.ouranos.session.translator.BaseTranslator;

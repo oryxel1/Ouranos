@@ -3,7 +3,8 @@ package com.github.blackjack200.ouranos.session;
 import com.github.blackjack200.ouranos.session.storage.OuranosStorage;
 import com.github.blackjack200.ouranos.session.translator.BaseTranslator;
 import com.github.blackjack200.ouranos.session.translator.impl.TranslatorsAdder;
-import com.github.blackjack200.ouranos.translators.ItemRewriterTranslator;
+import com.github.blackjack200.ouranos.translators.inventory.ItemRewriterTranslator;
+import com.github.blackjack200.ouranos.translators.ProtocolRewriterTranslator;
 import lombok.Getter;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.codec.v389.Bedrock_v389;
@@ -15,11 +16,12 @@ import org.cloudburstmc.protocol.bedrock.packet.*;
 
 import java.util.*;
 
-public class OuranosSession {
+public abstract class OuranosSession {
     @Getter
     private long uniqueId, runtimeId;
     @Getter
     private final int protocolId, targetVersion;
+    public int prevFormId;
 
     private final Map<Class<?>, OuranosStorage> storages = new HashMap<>();
 
@@ -146,8 +148,12 @@ public class OuranosSession {
             });
         }
 
+        this.translators.add(new ProtocolRewriterTranslator());
         this.translators.add(new ItemRewriterTranslator());
     }
+
+    public abstract void sendUpstreamPacket(BedrockPacket packet);
+    public abstract void sendDownstreamPacket(BedrockPacket packet);
 
     public BedrockPacket translateServerbound(BedrockPacket packet) {
         for (BaseTranslator translator : this.translators) {

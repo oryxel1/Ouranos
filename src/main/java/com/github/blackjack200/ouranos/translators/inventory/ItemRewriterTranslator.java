@@ -1,4 +1,4 @@
-package com.github.blackjack200.ouranos.translators;
+package com.github.blackjack200.ouranos.translators.inventory;
 
 import com.github.blackjack200.ouranos.converter.TypeConverter;
 import com.github.blackjack200.ouranos.session.OuranosSession;

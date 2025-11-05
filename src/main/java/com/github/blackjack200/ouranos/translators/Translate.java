@@ -1,17 +1,15 @@
 package com.github.blackjack200.ouranos.translators;
 
-import com.github.blackjack200.ouranos.ProtocolInfo;
 import com.github.blackjack200.ouranos.converter.ChunkRewriteException;
 import com.github.blackjack200.ouranos.converter.ItemTypeDictionary;
 import com.github.blackjack200.ouranos.converter.TypeConverter;
-import com.github.blackjack200.ouranos.converter.biome.BiomeDefinitionRegistry;
+import com.github.blackjack200.ouranos.translators.inventory.InventoryTranslator;
 import com.github.blackjack200.ouranos.utils.SimpleBlockDefinition;
 import io.netty.buffer.AbstractByteBufAllocator;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.log4j.Log4j2;
 import lombok.val;
 import org.cloudburstmc.math.immutable.vector.ImmutableVectorProvider;
-import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.codec.BedrockCodec;
 import org.cloudburstmc.protocol.bedrock.codec.v408.Bedrock_v408;
 import org.cloudburstmc.protocol.bedrock.codec.v419.Bedrock_v419;
@@ -23,39 +21,27 @@ import org.cloudburstmc.protocol.bedrock.codec.v544.Bedrock_v544;
 import org.cloudburstmc.protocol.bedrock.codec.v554.Bedrock_v554;
 import org.cloudburstmc.protocol.bedrock.codec.v560.Bedrock_v560;
 import org.cloudburstmc.protocol.bedrock.codec.v575.Bedrock_v575;
-import org.cloudburstmc.protocol.bedrock.codec.v589.Bedrock_v589;
 import org.cloudburstmc.protocol.bedrock.codec.v594.Bedrock_v594;
 import org.cloudburstmc.protocol.bedrock.codec.v618.Bedrock_v618;
-import org.cloudburstmc.protocol.bedrock.codec.v649.Bedrock_v649;
-import org.cloudburstmc.protocol.bedrock.codec.v671.Bedrock_v671;
 import org.cloudburstmc.protocol.bedrock.codec.v685.Bedrock_v685;
 import org.cloudburstmc.protocol.bedrock.codec.v712.Bedrock_v712;
 import org.cloudburstmc.protocol.bedrock.codec.v729.Bedrock_v729;
 import org.cloudburstmc.protocol.bedrock.codec.v776.Bedrock_v776;
-import org.cloudburstmc.protocol.bedrock.codec.v800.Bedrock_v800;
 import org.cloudburstmc.protocol.bedrock.data.*;
-import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitionData;
-import org.cloudburstmc.protocol.bedrock.data.biome.BiomeDefinitions;
 import org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition;
 import org.cloudburstmc.protocol.bedrock.data.entity.EntityDataType;
 import org.cloudburstmc.protocol.bedrock.data.entity.EntityDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.entity.EntityEventType;
-import org.cloudburstmc.protocol.bedrock.data.inventory.ContainerType;
-import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemData;
-import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemGroup;
 import org.cloudburstmc.protocol.bedrock.data.inventory.FullContainerName;
-import org.cloudburstmc.protocol.bedrock.data.inventory.crafting.recipe.*;
 import org.cloudburstmc.protocol.bedrock.data.inventory.descriptor.ItemDescriptorWithCount;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.ItemStackRequest;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.ItemStackRequestSlotData;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.action.*;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponse;
 import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.response.ItemStackResponseStatus;
-import org.cloudburstmc.protocol.bedrock.data.inventory.transaction.InventoryActionData;
 import org.cloudburstmc.protocol.bedrock.data.inventory.transaction.ItemUseTransaction;
 import org.cloudburstmc.protocol.bedrock.packet.*;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 import java.util.function.BiFunction;
@@ -93,194 +79,13 @@ public class Translate {
         return new ItemDescriptorWithCount(descriptor, i.getCount());
     }
 
-    private static void rewriteProtocol(int input, int output, boolean fromServer, OuranosProxySession player, BedrockPacket p, Collection<BedrockPacket> list) {
-        if (p instanceof StartGamePacket pk) {
-            if (output >= Bedrock_v776.CODEC.getProtocolVersion()) {
-                var newPk = new ItemComponentPacket();
+    private static void rewriteProtocol(int input, int output, boolean fromServer, BedrockPacket p) {
 
-                List<ItemDefinition> def = ItemTypeDictionary.getInstance(output).getEntries().entrySet().stream().<ItemDefinition>map((e) -> e.getValue().toDefinition(e.getKey())).toList();
-                newPk.getItems().addAll(def);
-                list.add(newPk);
-            }
-        }
-        if (p instanceof ItemStackResponsePacket pk) {
-            var translated = pk.getEntries().stream().map((entry) -> {
-                if (input >= Bedrock_v419.CODEC.getProtocolVersion() && output < Bedrock_v419.CODEC.getProtocolVersion()) {
-                    return new ItemStackResponse(entry.getResult().equals(ItemStackResponseStatus.OK), entry.getRequestId(), entry.getContainers());
-                }
-                return entry;
-            }).toList();
-            pk.getEntries().clear();
-            pk.getEntries().addAll(translated);
-        }
-        val provider = new ImmutableVectorProvider();
-
-        if (input < Bedrock_v729.CODEC.getProtocolVersion()) {
-            if (p instanceof TransferPacket pk) {
-                pk.setReloadWorld(true);
-            }
-        }
-        if (input < Bedrock_v712.CODEC.getProtocolVersion()) {
-            if (p instanceof InventoryTransactionPacket pk) {
-                pk.setTriggerType(ItemUseTransaction.TriggerType.PLAYER_INPUT);
-                pk.setClientInteractPrediction(ItemUseTransaction.PredictedResult.SUCCESS);
-            } else if (p instanceof PlayerAuthInputPacket pk) {
-                pk.setRawMoveVector(provider.createVector2f(0, 0));
-                var transaction = pk.getItemUseTransaction();
-                if (transaction != null) {
-                    transaction.setTriggerType(ItemUseTransaction.TriggerType.PLAYER_INPUT);
-                    transaction.setClientInteractPrediction(ItemUseTransaction.PredictedResult.SUCCESS);
-                }
-            }
-        }
-
-        if (p instanceof ItemStackRequestPacket pk) {
-            val newRequests = new ArrayList<ItemStackRequest>(pk.getRequests().size());
-            for (val req : pk.getRequests()) {
-                val newActions = new ArrayList<ItemStackRequestAction>(pk.getRequests().size());
-                val actions = req.getActions();
-                for (val action : actions) {
-                    if (action instanceof TakeAction a) {
-                        newActions.add(new TakeAction(a.getCount(), translateItemStackRequestSlotData(a.getSource()), translateItemStackRequestSlotData(a.getDestination())));
-                    } else if (action instanceof ConsumeAction a) {
-                        newActions.add(new ConsumeAction(a.getCount(), translateItemStackRequestSlotData(a.getSource())));
-                    } else if (action instanceof DestroyAction a) {
-                        newActions.add(new DestroyAction(a.getCount(), translateItemStackRequestSlotData(a.getSource())));
-                    } else if (action instanceof DropAction a) {
-                        newActions.add(new DropAction(a.getCount(), translateItemStackRequestSlotData(a.getSource()), a.isRandomly()));
-                    } else if (action instanceof PlaceAction a) {
-                        val newAct = new PlaceAction(a.getCount(), translateItemStackRequestSlotData(a.getSource()), translateItemStackRequestSlotData(a.getDestination()));
-                        // if (newAct.getSource().getContainerName().getContainer().equals(ContainerSlotType.CREATED_OUTPUT)) {
-                        //     newActions.add(new CraftCreativeAction(newAct.getSource().getContainerName().getContainer().ordinal(), 1));
-                        // }
-                        newActions.add(newAct);
-                    } else if (action instanceof SwapAction a) {
-                        newActions.add(new SwapAction(translateItemStackRequestSlotData(a.getSource()), translateItemStackRequestSlotData(a.getDestination())));
-                    } else {
-                        newActions.add(action);
-                    }
-                }
-                newRequests.add(new ItemStackRequest(req.getRequestId(), newActions.toArray(new ItemStackRequestAction[0]), req.getFilterStrings()));
-            }
-            pk.getRequests().clear();
-            pk.getRequests().addAll(newRequests);
-        }
 
         rewriteAdventureSettings(input, output, fromServer, player, p, list);
-
-        removeNewEntityData(p, output, Bedrock_v685.CODEC, EntityDataTypes.VISIBLE_MOB_EFFECTS);
-        removeNewEntityData(p, output, Bedrock_v594.CODEC,
-                EntityDataTypes.COLLISION_BOX, EntityDataTypes.PLAYER_HAS_DIED, EntityDataTypes.PLAYER_LAST_DEATH_DIMENSION, EntityDataTypes.PLAYER_LAST_DEATH_POS
-        );
-        removeNewEntityData(p, output, Bedrock_v527.CODEC,
-                EntityDataTypes.PLAYER_LAST_DEATH_POS, EntityDataTypes.PLAYER_LAST_DEATH_DIMENSION, EntityDataTypes.PLAYER_HAS_DIED
-        );
-        removeNewEntityData(p, output, Bedrock_v503.CODEC,
-                EntityDataTypes.HEARTBEAT_SOUND_EVENT, EntityDataTypes.HEARTBEAT_INTERVAL_TICKS, EntityDataTypes.MOVEMENT_SOUND_DISTANCE_OFFSET
-        );
-
-        if (input < Bedrock_v685.CODEC.getProtocolVersion()) {
-            if (p instanceof ContainerClosePacket pk) {
-                //TODO context based value: container type
-                pk.setType(ContainerType.NONE);
-            }
-        }
-        if (input < Bedrock_v671.CODEC.getProtocolVersion()) {
-            if (p instanceof ResourcePackStackPacket pk) {
-                pk.setHasEditorPacks(false);
-            }
-        }
-        if (input < Bedrock_v649.CODEC.getProtocolVersion()) {
-            if (p instanceof LevelChunkPacket pk) {
-                //FIXME overworld?
-                pk.setDimension(0);
-            } else if (p instanceof PlayerListPacket pk) {
-                for (var e : pk.getEntries()) {
-                    //FIXME context based value: subclient
-                    e.setSubClient(false);
-                }
-            }
-        }
-
-        if (input < Bedrock_v589.CODEC.getProtocolVersion()) {
-            if (p instanceof EmotePacket pk) {
-                //FIXME? context based value: xuid platformId
-                pk.setXuid("");
-                pk.setPlatformId("");
-                pk.setEmoteDuration(20);
-            }
-        }
-        if (input < Bedrock_v575.CODEC.getProtocolVersion()) {
-            if (p instanceof PlayerAuthInputPacket pk) {
-                //FIXME? context based value: xuid platformId
-                pk.setAnalogMoveVector(provider.createVector2f(0, 0));
-            }
-        }
-        if (input < Bedrock_v544.CODEC.getProtocolVersion()) {
-            if (p instanceof ModalFormResponsePacket pk) {
-                if (player.lastFormId == pk.getFormId()) {
-                    list.clear();
-                }
-                pk.setCancelReason(Optional.empty());
-                player.lastFormId = pk.getFormId();
-            }
-        }
-        if (input < Bedrock_v527.CODEC.getProtocolVersion()) {
-            if (p instanceof PlayerAuthInputPacket pk) {
-                pk.setInputInteractionModel(Optional.ofNullable(pk.getInputInteractionModel()).orElse(InputInteractionModel.CLASSIC));
-            } else if (p instanceof PlayerActionPacket pk) {
-                pk.setResultPosition(pk.getBlockPosition());
-            }
-        }
-        if (p instanceof PlayerSkinPacket pk) {
-            assert ProtocolInfo.getPacketCodec(output) != null;
-            pk.setSkin(pk.getSkin().toBuilder().geometryDataEngineVersion(ProtocolInfo.getPacketCodec(output).getMinecraftVersion()).build());
-        }
-        if (p instanceof PlayerListPacket pk) {
-            for (var e : pk.getEntries()) {
-                e.setColor(Objects.requireNonNullElse(e.getColor(), Color.WHITE));
-                if (e.getSkin() != null) {
-                    e.setSkin(e.getSkin().toBuilder().geometryDataEngineVersion(ProtocolInfo.getPacketCodec(output).getMinecraftVersion()).build());
-                }
-            }
-        }
-        if (p instanceof BiomeDefinitionListPacket pk) {
-            //TODO fix biome for v800
-            if (output >= Bedrock_v800.CODEC.getProtocolVersion()) {
-                if (pk.getBiomes() == null && pk.getDefinitions() != null) {
-                    BiomeDefinitions defs = new BiomeDefinitions(new HashMap<>());
-                    pk.getDefinitions().forEach((id, n) -> {
-                        var def = BiomeDefinitionRegistry.getInstance(input).fromStringId(id);
-                        if (def != null) {
-                            defs.getDefinitions().put(id, def);
-                        }
-                    });
-                    pk.setBiomes(defs);
-                }
-            } else {
-                if (pk.getBiomes() != null && pk.getDefinitions() == null) {
-                    pk.setDefinitions(downgradeBiomeDefinition(output, pk.getBiomes().getDefinitions()));
-                }
-            }
-        }
     }
 
-    private static NbtMap downgradeBiomeDefinition(int output, Map<String, BiomeDefinitionData> definitions) {
-        var builder = NbtMap.builder();
-        if (definitions.isEmpty()) {
-            definitions = BiomeDefinitionRegistry.getInstance(output).getEntries();
-        }
-        definitions.forEach((id, def) -> {
-            var d = NbtMap.builder();
-            d.putString("name_hash", id);
-            d.putFloat("temperature", def.getTemperature());
-            d.putFloat("downfall", def.getDownfall());
-            d.putBoolean("rain", def.isRain());
-            builder.putCompound(id, d.build());
-        });
-        NbtMap build = builder.build();
-        return build;
-    }
+
 
     private static void rewritePlayerInput(int input, int output, OuranosProxySession player, BedrockPacket p, Collection<BedrockPacket> list) {
 
@@ -408,15 +213,7 @@ public class Translate {
     }
 
     @SuppressWarnings("deprecation")
-    private static ItemStackRequestSlotData translateItemStackRequestSlotData(ItemStackRequestSlotData dest) {
-        return new ItemStackRequestSlotData(
-                dest.getContainer(),
-                dest.getSlot(),
-                dest.getStackNetworkId(),
-                Optional.ofNullable(dest.getContainerName())
-                        .orElse(new FullContainerName(dest.getContainer(), 0))
-        );
-    }
+
 
     private static void removeNewEntityData(BedrockPacket p, int output, BedrockCodec codec, EntityDataType<?>... types) {
         if (output < codec.getProtocolVersion()) {

@@ -1,4 +1,4 @@
-package com.github.blackjack200.ouranos.translators;
+package com.github.blackjack200.ouranos.translators.inventory;
 
 import lombok.extern.log4j.Log4j2;
 import org.cloudburstmc.protocol.bedrock.codec.v407.Bedrock_v407;
