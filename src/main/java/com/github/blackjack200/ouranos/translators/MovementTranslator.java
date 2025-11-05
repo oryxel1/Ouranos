@@ -1,7 +1,6 @@
-package com.github.blackjack200.ouranos.network.session.translate;
+package com.github.blackjack200.ouranos.translators;
 
-import com.github.blackjack200.ouranos.network.session.OuranosProxySession;
-import lombok.extern.log4j.Log4j2;
+import com.github.blackjack200.ouranos.session.OuranosProxySession;
 import org.cloudburstmc.protocol.bedrock.codec.v388.Bedrock_v388;
 import org.cloudburstmc.protocol.bedrock.codec.v389.Bedrock_v389;
 import org.cloudburstmc.protocol.bedrock.codec.v390.Bedrock_v390;
@@ -13,8 +12,7 @@ import org.cloudburstmc.protocol.bedrock.packet.*;
 
 import java.util.Collection;
 
-@Log4j2
-public class MovementTranslator {
+public class MovementTranslator ex{
     public static void rewriteMovement(int input, int output, boolean fromServer, OuranosProxySession player, BedrockPacket p, Collection<BedrockPacket> list) {
         if (!fromServer) {
             translateClientMovement(input, output, player, p, list);

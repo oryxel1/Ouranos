@@ -1,11 +1,11 @@
-package com.github.blackjack200.ouranos.network.session.translate;
+package com.github.blackjack200.ouranos.translators;
 
 import com.github.blackjack200.ouranos.ProtocolInfo;
 import com.github.blackjack200.ouranos.converter.ChunkRewriteException;
 import com.github.blackjack200.ouranos.converter.ItemTypeDictionary;
 import com.github.blackjack200.ouranos.converter.TypeConverter;
 import com.github.blackjack200.ouranos.converter.biome.BiomeDefinitionRegistry;
-import com.github.blackjack200.ouranos.network.session.OuranosProxySession;
+import com.github.blackjack200.ouranos.session.OuranosProxySession;
 import com.github.blackjack200.ouranos.utils.SimpleBlockDefinition;
 import io.netty.buffer.AbstractByteBufAllocator;
 import io.netty.util.ReferenceCountUtil;
@@ -416,44 +416,6 @@ public class Translate {
         return build;
     }
 
-    public static void writeProtocolDefault(OuranosProxySession session, BedrockPacket p) {
-        val provider = new ImmutableVectorProvider();
-        if (p instanceof StartGamePacket pk) {
-            pk.setServerId(Optional.ofNullable(pk.getServerId()).orElse(""));
-            pk.setWorldId(Optional.ofNullable(pk.getWorldId()).orElse(""));
-            pk.setScenarioId(Optional.ofNullable(pk.getScenarioId()).orElse(""));
-            pk.setChatRestrictionLevel(Optional.ofNullable(pk.getChatRestrictionLevel()).orElse(ChatRestrictionLevel.NONE));
-            pk.setPlayerPropertyData(Optional.ofNullable(pk.getPlayerPropertyData()).orElse(NbtMap.EMPTY));
-            pk.setWorldTemplateId(Optional.ofNullable(pk.getWorldTemplateId()).orElse(UUID.randomUUID()));
-            pk.setOwnerId(Objects.requireNonNullElse(pk.getOwnerId(), ""));
-            pk.setAuthoritativeMovementMode(Objects.requireNonNullElse(pk.getAuthoritativeMovementMode(), AuthoritativeMovementMode.SERVER_WITH_REWIND));
-        }
-        if (p instanceof PlayerAuthInputPacket pk) {
-            pk.setDelta(Objects.requireNonNullElseGet(pk.getDelta(), () -> provider.createVector3f(0, 0, 0)));
-            pk.setMotion(Objects.requireNonNullElseGet(pk.getMotion(), () -> provider.createVector2f(0, 0)));
-            pk.setRawMoveVector(Objects.requireNonNullElseGet(pk.getRawMoveVector(), () -> provider.createVector2f(0, 0)));
-            pk.setInputMode(Objects.requireNonNullElse(pk.getInputMode(), session.movement.inputMode));
-            pk.setPlayMode(Objects.requireNonNullElse(pk.getPlayMode(), ClientPlayMode.NORMAL));
-            pk.setInputInteractionModel(Objects.requireNonNullElse(pk.getInputInteractionModel(), InputInteractionModel.TOUCH));
-            pk.setAnalogMoveVector(Objects.requireNonNullElse(pk.getAnalogMoveVector(), provider.createVector2f(0, 0)));
-
-            pk.setInteractRotation(Objects.requireNonNullElseGet(pk.getInteractRotation(), () -> provider.createVector2f(0, 0)));
-            pk.setCameraOrientation(Objects.requireNonNullElseGet(pk.getCameraOrientation(), () -> provider.createVector3f(0, 0, 0)));
-        }
-        if (p instanceof AddPlayerPacket pk) {
-            pk.setGameType(Optional.ofNullable(pk.getGameType()).orElse(GameType.DEFAULT));
-        }
-        if (p instanceof ModalFormResponsePacket pk) {
-            if (pk.getFormData() == null) {
-                pk.setFormData("null");
-            }
-        }
-        if (p instanceof ResourcePacksInfoPacket pk) {
-            pk.setWorldTemplateId(Objects.requireNonNullElseGet(pk.getWorldTemplateId(), UUID::randomUUID));
-            pk.setWorldTemplateVersion(Objects.requireNonNullElse(pk.getWorldTemplateVersion(), "0.0.0"));
-        }
-    }
-
     private static void rewritePlayerInput(int input, int output, OuranosProxySession player, BedrockPacket p, Collection<BedrockPacket> list) {
 
     }
@@ -696,7 +658,6 @@ public class Translate {
                 packet.setData(to.retain());
             } catch (ChunkRewriteException exception) {
                 log.error("Failed to rewrite chunk: ", exception);
-                player.disconnect("Failed to rewrite chunk: " + exception.getMessage());
             } finally {
                 ReferenceCountUtil.release(from);
                 ReferenceCountUtil.release(to);
@@ -715,7 +676,6 @@ public class Translate {
                         subChunk.setData(to.retain());
                     } catch (ChunkRewriteException exception) {
                         log.error("Failed to rewrite chunk: ", exception);
-                        player.disconnect("Failed to rewrite chunk: " + exception.getMessage());
                     } finally {
                         ReferenceCountUtil.release(from);
                         ReferenceCountUtil.release(to);

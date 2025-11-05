@@ -1,8 +1,5 @@
-package com.github.blackjack200.ouranos.network.session;
+package com.github.blackjack200.ouranos.session;
 
-import cn.hutool.core.collection.ConcurrentHashSet;
-import com.github.blackjack200.ouranos.network.session.translate.InventoryData;
-import com.github.blackjack200.ouranos.network.session.translate.MovementData;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;

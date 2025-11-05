@@ -1,6 +1,6 @@
-package com.github.blackjack200.ouranos.network.session.translate;
+package com.github.blackjack200.ouranos.translators;
 
-import com.github.blackjack200.ouranos.network.session.OuranosProxySession;
+import com.github.blackjack200.ouranos.session.OuranosProxySession;
 import lombok.extern.log4j.Log4j2;
 import org.cloudburstmc.protocol.bedrock.codec.v407.Bedrock_v407;
 import org.cloudburstmc.protocol.bedrock.data.inventory.*;
@@ -54,7 +54,7 @@ public class InventoryTranslator {
                                             new ItemStackRequestSlotData(bInv, b.getSlot(), destination.getNetId(), new FullContainerName(bInv, 0))
                                     )
                             }, new String[]{}));
-                            player.inventory.xa.put(0, (slots) -> {
+                            player.inventory.stackResponses.put(0, (slots) -> {
                                 player.inventory.inventories.get(a.getSource().getContainerId()).set(a.getSlot(), source.toBuilder().count(source.getCount() - count).build());
                                 player.inventory.inventories.get(b.getSource().getContainerId()).set(b.getSlot(), source.toBuilder().count(count).build());
                             });
@@ -66,7 +66,7 @@ public class InventoryTranslator {
                                             new ItemStackRequestSlotData(bInv, b.getSlot(), destination.getNetId(), new FullContainerName(bInv, 0))
                                     )
                             }, new String[]{}));
-                            player.inventory.xa.put(1, (slots) -> {
+                            player.inventory.stackResponses.put(1, (slots) -> {
                                 player.inventory.inventories.get(a.getSource().getContainerId()).set(a.getSlot(), source.toBuilder().count(source.getCount() - count).build());
                                 player.inventory.inventories.get(b.getSource().getContainerId()).set(b.getSlot(), destination.toBuilder().count(destination.getCount() + count).build());
                             });
@@ -78,7 +78,7 @@ public class InventoryTranslator {
                                         new ItemStackRequestSlotData(bInv, b.getSlot(), destination.getNetId(), new FullContainerName(bInv, 0))
                                 )
                         }, new String[]{}));
-                        player.inventory.xa.put(2, (slots) -> {
+                        player.inventory.stackResponses.put(2, (slots) -> {
                             player.inventory.inventories.get(a.getSource().getContainerId()).set(a.getSlot(), destination);
                             player.inventory.inventories.get(b.getSource().getContainerId()).set(b.getSlot(), source);
                         });
@@ -120,8 +120,8 @@ public class InventoryTranslator {
             inv.set(pk.getInventorySlot(), pk.getItem());
         } else if (p instanceof ItemStackResponsePacket pk) {
             for (var entry : pk.getEntries()) {
-                var xa = player.inventory.xa.get(entry.getRequestId());
-                player.inventory.xa.remove(entry.getRequestId());
+                var xa = player.inventory.stackResponses.get(entry.getRequestId());
+                player.inventory.stackResponses.remove(entry.getRequestId());
                 if (entry.getResult() == ItemStackResponseStatus.OK) {
                     if (xa != null) {
                         xa.accept(entry.getContainers());
