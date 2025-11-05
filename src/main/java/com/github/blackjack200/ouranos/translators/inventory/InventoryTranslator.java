@@ -1,5 +1,8 @@
 package com.github.blackjack200.ouranos.translators.inventory;
 
+import com.github.blackjack200.ouranos.session.OuranosSession;
+import com.github.blackjack200.ouranos.session.translator.BaseTranslator;
+import com.github.blackjack200.ouranos.translators.storages.ClientInventoryStorage;
 import lombok.extern.log4j.Log4j2;
 import org.cloudburstmc.protocol.bedrock.codec.v407.Bedrock_v407;
 import org.cloudburstmc.protocol.bedrock.data.inventory.*;
@@ -19,30 +22,86 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Log4j2
-public class InventoryTranslator {
-    public static void rewriteInventory(int input, int output, boolean fromServer, OuranosProxySession player, BedrockPacket p, Collection<BedrockPacket> list) {
-        if (player.getTargetProtocolId() >= Bedrock_v407.CODEC.getProtocolVersion()) {
-            return;
+public class InventoryTranslator implements BaseTranslator {
+    @Override
+    public BedrockPacket translateClientbound(OuranosSession session, BedrockPacket bedrockPacket) {
+        final int input = session.getProtocolId(), output = session.getTargetVersion();
+
+        final ClientInventoryStorage storage = session.get(ClientInventoryStorage.class);
+
+        if (bedrockPacket instanceof CreativeContentPacket packet && output < Bedrock_v407.CODEC.getProtocolVersion()) {
+            final InventoryContentPacket newPk = new InventoryContentPacket();
+            newPk.setContainerId(ContainerId.CREATIVE);
+            List<ItemData> items = packet.getContents().stream().map(CreativeItemData::getItem).filter(i -> i.getDefinition().getVersion().equals(ItemVersion.LEGACY)).collect(Collectors.toList());
+            newPk.setContents(items);
+            return newPk;
+        } else if (bedrockPacket instanceof InventoryContentPacket packet) {
+            storage.getInventories().put(packet.getContainerId(), new ArrayList<>(packet.getContents()));
+        } else if (bedrockPacket instanceof InventorySlotPacket packet) {
+            storage.getInventories().putIfAbsent(packet.getContainerId(), new ArrayList<>());
+            var inv = storage.getInventories().get(packet.getContainerId());
+            while (inv.size() <= packet.getSlot()) {
+                inv.add(ItemData.AIR);
+            }
+            inv.set(packet.getSlot(), packet.getItem());
+        } else if (bedrockPacket instanceof MobEquipmentPacket packet) {
+            storage.getInventories().putIfAbsent(packet.getContainerId(), new ArrayList<>());
+            var inv = storage.getInventories().get(packet.getContainerId());
+            while (inv.size() < packet.getInventorySlot()) {
+                inv.add(ItemData.AIR);
+            }
+            inv.set(packet.getInventorySlot(), packet.getItem());
+        } else if (bedrockPacket instanceof ItemStackResponsePacket packet) {
+            for (var entry : packet.getEntries()) {
+                var xa = storage.getStackResponses().get(entry.getRequestId());
+                storage.getStackResponses().remove(entry.getRequestId());
+                if (entry.getResult() == ItemStackResponseStatus.OK) {
+                    if (xa != null) {
+                        xa.accept(entry.getContainers());
+                    }
+                    for (var slot : entry.getContainers()) {
+                        var id = parseContainerId(slot.getContainerName().getContainer());
+                        var container = storage.getInventories().get(id);
+                        if (container != null) {
+                            for (var item : slot.getItems()) {
+                                container.set(item.getSlot(), container.get(item.getSlot()).toBuilder().count(item.getCount()).damage(item.getDurabilityCorrection()).usingNetId(true).netId(item.getStackNetworkId()).build());
+                            }
+                        }
+                    }
+                } else {
+                    storage.getInventories().forEach((containerId, contents) -> {
+                        var pp = new InventoryContentPacket();
+                        pp.setContainerId(containerId);
+                        pp.setContents(contents);
+                        session.sendUpstreamPacket(pp);
+                    });
+                    return null;
+                }
+            }
         }
-        if (fromServer) {
-            handleServerside(input, output, player, p, list);
-            return;
-        }
-        if (p instanceof InventoryTransactionPacket pk) {
-            if (pk.getActions().size() == 1) {
-                var a = pk.getActions().get(0);
+
+        return bedrockPacket;
+    }
+
+    @Override
+    public BedrockPacket translateServerbound(OuranosSession session, BedrockPacket bedrockPacket) {
+        final ClientInventoryStorage storage = session.get(ClientInventoryStorage.class);
+
+        if (bedrockPacket instanceof InventoryTransactionPacket packet) {
+            if (packet.getActions().size() == 1) {
+                var a = packet.getActions().get(0);
                 //TODO
-            } else if (pk.getActions().size() == 2) {
-                var a = pk.getActions().get(0);
-                var b = pk.getActions().get(1);
+            } else if (packet.getActions().size() == 2) {
+                var a = packet.getActions().get(0);
+                var b = packet.getActions().get(1);
 
                 var newPk = new ItemStackRequestPacket();
                 var aInv = parseContainerId(a.getSource().getContainerId());
                 var bInv = parseContainerId(b.getSource().getContainerId());
 
                 if (a.getSource().getType() == InventorySource.Type.CONTAINER && b.getSource().getType() == InventorySource.Type.CONTAINER) {
-                    var source = player.inventory.inventories.get(a.getSource().getContainerId()).get(a.getSlot());
-                    var destination = player.inventory.inventories.get(b.getSource().getContainerId()).get(b.getSlot());
+                    var source = storage.getInventories().get(a.getSource().getContainerId()).get(a.getSlot());
+                    var destination = storage.getInventories().get(b.getSource().getContainerId()).get(b.getSlot());
                     if (!source.isNull()) {
                         var count = Math.abs(source.getCount() - a.getToItem().getCount());
                         if (destination.isNull()) {
@@ -53,9 +112,9 @@ public class InventoryTranslator {
                                             new ItemStackRequestSlotData(bInv, b.getSlot(), destination.getNetId(), new FullContainerName(bInv, 0))
                                     )
                             }, new String[]{}));
-                            player.inventory.stackResponses.put(0, (slots) -> {
-                                player.inventory.inventories.get(a.getSource().getContainerId()).set(a.getSlot(), source.toBuilder().count(source.getCount() - count).build());
-                                player.inventory.inventories.get(b.getSource().getContainerId()).set(b.getSlot(), source.toBuilder().count(count).build());
+                            storage.getStackResponses().put(0, (slots) -> {
+                                storage.getInventories().get(a.getSource().getContainerId()).set(a.getSlot(), source.toBuilder().count(source.getCount() - count).build());
+                                storage.getInventories().get(b.getSource().getContainerId()).set(b.getSlot(), source.toBuilder().count(count).build());
                             });
                         } else {
                             newPk.getRequests().add(new ItemStackRequest(1, new ItemStackRequestAction[]{
@@ -65,9 +124,9 @@ public class InventoryTranslator {
                                             new ItemStackRequestSlotData(bInv, b.getSlot(), destination.getNetId(), new FullContainerName(bInv, 0))
                                     )
                             }, new String[]{}));
-                            player.inventory.stackResponses.put(1, (slots) -> {
-                                player.inventory.inventories.get(a.getSource().getContainerId()).set(a.getSlot(), source.toBuilder().count(source.getCount() - count).build());
-                                player.inventory.inventories.get(b.getSource().getContainerId()).set(b.getSlot(), destination.toBuilder().count(destination.getCount() + count).build());
+                            storage.getStackResponses().put(1, (slots) -> {
+                                storage.getInventories().get(a.getSource().getContainerId()).set(a.getSlot(), source.toBuilder().count(source.getCount() - count).build());
+                                storage.getInventories().get(b.getSource().getContainerId()).set(b.getSlot(), destination.toBuilder().count(destination.getCount() + count).build());
                             });
                         }
                     } else {
@@ -77,74 +136,18 @@ public class InventoryTranslator {
                                         new ItemStackRequestSlotData(bInv, b.getSlot(), destination.getNetId(), new FullContainerName(bInv, 0))
                                 )
                         }, new String[]{}));
-                        player.inventory.stackResponses.put(2, (slots) -> {
-                            player.inventory.inventories.get(a.getSource().getContainerId()).set(a.getSlot(), destination);
-                            player.inventory.inventories.get(b.getSource().getContainerId()).set(b.getSlot(), source);
+                        storage.getStackResponses().put(2, (slots) -> {
+                            storage.getInventories().get(a.getSource().getContainerId()).set(a.getSlot(), destination);
+                            storage.getInventories().get(b.getSource().getContainerId()).set(b.getSlot(), source);
                         });
                     }
 
-                    list.clear();
-                    list.add(newPk);
+                    return newPk;
                 }
             }
         }
-    }
 
-    @SuppressWarnings("deprecation")
-    private static void handleServerside(int input, int output, OuranosProxySession player, BedrockPacket p, Collection<BedrockPacket> list) {
-        if (p instanceof CreativeContentPacket pk) {
-            if (output < Bedrock_v407.CODEC.getProtocolVersion()) {
-                var newPk = new InventoryContentPacket();
-                newPk.setContainerId(ContainerId.CREATIVE);
-                List<ItemData> items = pk.getContents().stream().map(CreativeItemData::getItem).filter(i -> i.getDefinition().getVersion().equals(ItemVersion.LEGACY)).collect(Collectors.toList());
-                newPk.setContents(items);
-                list.clear();
-                list.add(newPk);
-            }
-        } else if (p instanceof InventoryContentPacket pk) {
-            player.inventory.inventories.put(pk.getContainerId(), new ArrayList<>(pk.getContents()));
-        } else if (p instanceof InventorySlotPacket pk) {
-            player.inventory.inventories.putIfAbsent(pk.getContainerId(), new ArrayList<>());
-            var inv = player.inventory.inventories.get(pk.getContainerId());
-            while (inv.size() <= pk.getSlot()) {
-                inv.add(ItemData.AIR);
-            }
-            inv.set(pk.getSlot(), pk.getItem());
-        } else if (p instanceof MobEquipmentPacket pk) {
-            player.inventory.inventories.putIfAbsent(pk.getContainerId(), new ArrayList<>());
-            var inv = player.inventory.inventories.get(pk.getContainerId());
-            while (inv.size() < pk.getInventorySlot()) {
-                inv.add(ItemData.AIR);
-            }
-            inv.set(pk.getInventorySlot(), pk.getItem());
-        } else if (p instanceof ItemStackResponsePacket pk) {
-            for (var entry : pk.getEntries()) {
-                var xa = player.inventory.stackResponses.get(entry.getRequestId());
-                player.inventory.stackResponses.remove(entry.getRequestId());
-                if (entry.getResult() == ItemStackResponseStatus.OK) {
-                    if (xa != null) {
-                        xa.accept(entry.getContainers());
-                    }
-                    for (var slot : entry.getContainers()) {
-                        var id = parseContainerId(slot.getContainerName().getContainer());
-                        var container = player.inventory.inventories.get(id);
-                        if (container != null) {
-                            for (var item : slot.getItems()) {
-                                container.set(item.getSlot(), container.get(item.getSlot()).toBuilder().count(item.getCount()).damage(item.getDurabilityCorrection()).usingNetId(true).netId(item.getStackNetworkId()).build());
-                            }
-                        }
-                    }
-                } else {
-                    player.inventory.inventories.forEach((containerId, contents) -> {
-                        var pp = new InventoryContentPacket();
-                        pp.setContainerId(containerId);
-                        pp.setContents(contents);
-                        list.add(pp);
-                    });
-                    break;
-                }
-            }
-        }
+        return bedrockPacket;
     }
 
     private static ContainerSlotType parseContainerId(int containerId) {
