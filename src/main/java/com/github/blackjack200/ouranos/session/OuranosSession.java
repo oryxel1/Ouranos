@@ -35,6 +35,7 @@ public abstract class OuranosSession {
         return (T) this.storages.get(klass);
     }
 
+    private final List<ProtocolToProtocol> defaultTranslators = new ArrayList<>();
     private final List<ProtocolToProtocol> translators = new ArrayList<>();
     private final List<ProtocolToProtocol> translatorsReversed;
 
@@ -42,16 +43,16 @@ public abstract class OuranosSession {
         this.protocolId = protocolId;
         this.targetVersion = targetVersion;
 
-        this.translators.add(new GlobalProtocolTranslator());
-        this.translators.add(new GlobalWorldTranslator());
-        this.translators.add(new GlobalItemTranslator());
+        this.defaultTranslators.add(new GlobalProtocolTranslator());
+        this.defaultTranslators.add(new GlobalWorldTranslator());
+        this.defaultTranslators.add(new GlobalItemTranslator());
 
         this.translators.addAll(ProtocolInfo.getTranslators(targetVersion, protocolId));
         this.translators.forEach(translator -> translator.init(this));
 
-        this.translatorsReversed = new ArrayList<>(this.translators);
-        this.translatorsReversed.reversed();
-        System.out.println(Arrays.toString(this.translatorsReversed.toArray()));
+        this.translatorsReversed = new ArrayList<>();
+        this.translatorsReversed.addAll(this.translators);
+        Collections.reverse(this.translatorsReversed);
     }
 
     public abstract void sendUpstreamPacket(BedrockPacket packet);
@@ -67,6 +68,10 @@ public abstract class OuranosSession {
         }
 
         final WrappedBedrockPacket wrapped = new WrappedBedrockPacket(this, this.getTargetVersion(), this.getProtocolId(), packet, false);
+        for (ProtocolToProtocol translator : this.defaultTranslators) {
+            translator.passthroughClientbound(wrapped);
+        }
+
         for (ProtocolToProtocol translator : this.translators) {
             translator.passthroughClientbound(wrapped);
         }
@@ -75,14 +80,12 @@ public abstract class OuranosSession {
 
     public final BedrockPacket translateServerbound(BedrockPacket packet) {
         final WrappedBedrockPacket wrapped = new WrappedBedrockPacket(this, this.getProtocolId(), this.getTargetVersion(), packet, false);
-        if (packet instanceof MovePlayerPacket) {
-            System.out.println("Start----");
+        for (ProtocolToProtocol translator : this.defaultTranslators) {
+            translator.passthroughServerbound(wrapped);
         }
+
         for (ProtocolToProtocol translator : this.translatorsReversed) {
             translator.passthroughServerbound(wrapped);
-            if (packet instanceof MovePlayerPacket || packet instanceof PlayerAuthInputPacket) {
-                System.out.println("Passthrough " + translator.getClass() + " : " + wrapped.getPacket());
-            }
         }
         return wrapped.isCancelled() ? null : wrapped.getPacket();
     }
