@@ -66,7 +66,7 @@ public abstract class OuranosSession {
             this.runtimeId = startGamePacket.getRuntimeEntityId();
             this.serverAuthoritativeInventories = startGamePacket.isInventoriesServerAuthoritative();
             this.authoritativeMovementMode = startGamePacket.getAuthoritativeMovementMode();
-            this.serverAuthoritativeInventories = startGamePacket.isServerAuthoritativeBlockBreaking();
+            this.serverAuthoritativeBlockBreaking = startGamePacket.isServerAuthoritativeBlockBreaking();
         }
 
         final WrappedBedrockPacket wrapped = new WrappedBedrockPacket(this, this.getTargetVersion(), this.getProtocolId(), packet, false);
