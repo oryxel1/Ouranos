@@ -3,6 +3,7 @@ package com.github.blackjack200.ouranos.session;
 import com.github.blackjack200.ouranos.ProtocolInfo;
 import com.github.blackjack200.ouranos.base.ProtocolToProtocol;
 import com.github.blackjack200.ouranos.base.WrappedBedrockPacket;
+import com.github.blackjack200.ouranos.translators.GlobalItemTranslator;
 import com.github.blackjack200.ouranos.translators.GlobalProtocolTranslator;
 import com.github.blackjack200.ouranos.translators.GlobalWorldTranslator;
 import com.github.blackjack200.ouranos.session.storage.OuranosStorage;
@@ -37,6 +38,7 @@ public abstract class OuranosSession {
 
         this.translators.add(new GlobalProtocolTranslator());
         this.translators.add(new GlobalWorldTranslator());
+        this.translators.add(new GlobalItemTranslator());
 
         this.translators.addAll(ProtocolInfo.getTranslators(targetVersion, protocolId));
 
@@ -116,6 +118,11 @@ public abstract class OuranosSession {
     public abstract void sendDownstreamPacket(BedrockPacket packet);
 
     public final BedrockPacket translateClientbound(BedrockPacket packet) {
+        if (packet instanceof StartGamePacket startGamePacket) {
+            this.uniqueId = startGamePacket.getUniqueEntityId();
+            this.runtimeId = startGamePacket.getRuntimeEntityId();
+        }
+
         final WrappedBedrockPacket wrapped = new WrappedBedrockPacket(this, this.getTargetVersion(), this.getProtocolId(),  packet, false);
         for (ProtocolToProtocol translator : this.translators) {
             if (!translator.passthroughClientbound(wrapped)) {

@@ -19,8 +19,6 @@ public class TranslatorsAdder implements BaseTranslator {
             }
 
             session.put(new MissingMovementTranslator());
-            session.setUniqueId(packet.getUniqueEntityId());
-            session.setRuntimeId(packet.getRuntimeEntityId());
 
             if (packet.isInventoriesServerAuthoritative() && session.getProtocolId() < Bedrock_v407.CODEC.getProtocolVersion()) {
                 session.put(new InventoryTranslator());
