@@ -21,7 +21,7 @@ public abstract class OuranosSession {
     private final int protocolId, targetVersion;
 
     @Getter
-    private boolean serverAuthoritativeInventories;
+    private boolean serverAuthoritativeInventories, serverAuthoritativeBlockBreaking;
     @Getter
     private AuthoritativeMovementMode authoritativeMovementMode;
 
@@ -36,6 +36,7 @@ public abstract class OuranosSession {
     }
 
     private final List<ProtocolToProtocol> translators = new ArrayList<>();
+    private final List<ProtocolToProtocol> translatorsReversed;
 
     public OuranosSession(int protocolId, int targetVersion) {
         this.protocolId = protocolId;
@@ -47,6 +48,10 @@ public abstract class OuranosSession {
 
         this.translators.addAll(ProtocolInfo.getTranslators(targetVersion, protocolId));
         this.translators.forEach(translator -> translator.init(this));
+
+        this.translatorsReversed = new ArrayList<>(this.translators);
+        this.translatorsReversed.reversed();
+        System.out.println(Arrays.toString(this.translatorsReversed.toArray()));
     }
 
     public abstract void sendUpstreamPacket(BedrockPacket packet);
@@ -58,9 +63,10 @@ public abstract class OuranosSession {
             this.runtimeId = startGamePacket.getRuntimeEntityId();
             this.serverAuthoritativeInventories = startGamePacket.isInventoriesServerAuthoritative();
             this.authoritativeMovementMode = startGamePacket.getAuthoritativeMovementMode();
+            this.serverAuthoritativeInventories = startGamePacket.isServerAuthoritativeBlockBreaking();
         }
 
-        final WrappedBedrockPacket wrapped = new WrappedBedrockPacket(this, this.getTargetVersion(), this.getProtocolId(),  packet, false);
+        final WrappedBedrockPacket wrapped = new WrappedBedrockPacket(this, this.getTargetVersion(), this.getProtocolId(), packet, false);
         for (ProtocolToProtocol translator : this.translators) {
             translator.passthroughClientbound(wrapped);
         }
@@ -69,8 +75,14 @@ public abstract class OuranosSession {
 
     public final BedrockPacket translateServerbound(BedrockPacket packet) {
         final WrappedBedrockPacket wrapped = new WrappedBedrockPacket(this, this.getProtocolId(), this.getTargetVersion(), packet, false);
-        for (ProtocolToProtocol translator : this.translators) {
+        if (packet instanceof MovePlayerPacket) {
+            System.out.println("Start----");
+        }
+        for (ProtocolToProtocol translator : this.translatorsReversed) {
             translator.passthroughServerbound(wrapped);
+            if (packet instanceof MovePlayerPacket || packet instanceof PlayerAuthInputPacket) {
+                System.out.println("Passthrough " + translator.getClass() + " : " + wrapped.getPacket());
+            }
         }
         return wrapped.isCancelled() ? null : wrapped.getPacket();
     }

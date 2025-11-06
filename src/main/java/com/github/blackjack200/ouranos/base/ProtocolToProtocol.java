@@ -23,8 +23,7 @@ public class ProtocolToProtocol {
 
     public void registerClientbound(Class<? extends BedrockPacket> klass, Consumer<WrappedBedrockPacket> consumer) {
         if (this.mappedClientBounds.containsKey(klass)) {
-            this.mappedClientBounds.put(klass, this.mappedClientBounds.get(klass).andThen(consumer));
-            return;
+            throw new RuntimeException("This (clientbound) packet is already mapped: " + klass + " - " + this.getClass());
         }
 
         this.mappedClientBounds.put(klass, consumer);
@@ -32,8 +31,7 @@ public class ProtocolToProtocol {
 
     public void registerServerbound(Class<? extends BedrockPacket> klass, Consumer<WrappedBedrockPacket> consumer) {
         if (this.mappedServerBounds.containsKey(klass)) {
-            this.mappedServerBounds.put(klass, this.mappedServerBounds.get(klass).andThen(consumer));
-            return;
+            throw new RuntimeException("This (serverbound) packet is already mapped: " + klass + " - " + this.getClass());
         }
 
         this.mappedServerBounds.put(klass, consumer);

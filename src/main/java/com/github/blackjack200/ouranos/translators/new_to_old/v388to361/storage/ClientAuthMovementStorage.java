@@ -7,8 +7,6 @@ import lombok.Setter;
 import org.cloudburstmc.math.vector.Vector2f;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.protocol.bedrock.data.*;
-import org.cloudburstmc.protocol.bedrock.data.inventory.itemstack.request.ItemStackRequest;
-import org.cloudburstmc.protocol.bedrock.data.inventory.transaction.ItemUseTransaction;
 import org.cloudburstmc.protocol.bedrock.packet.PlayerAuthInputPacket;
 
 import java.util.ArrayDeque;
@@ -23,10 +21,7 @@ public class ClientAuthMovementStorage extends OuranosStorage {
 
     private Vector3f position, rotation;
 
-    private final Queue<PlayerAuthInputData> inputData = new ArrayDeque<>(16);
-//    private final Queue<ItemUseTransaction> itemTransactions = new ArrayDeque<>(16);
-//    private final Queue<ItemStackRequest> stackRequests = new ArrayDeque<>(16);
-//    private final Queue<PlayerBlockActionData> blockInteractions = new ArrayDeque<>(16);
+    private final Queue<PlayerAuthInputData> inputData = new ArrayDeque<>();
     private InputMode inputMode = InputMode.UNDEFINED;
 
     private boolean breaking;
@@ -41,22 +36,6 @@ public class ClientAuthMovementStorage extends OuranosStorage {
         packet.setDelta(Vector3f.ZERO);
         packet.setPlayMode(ClientPlayMode.NORMAL);
         this.inputData.clear();
-
-//        final ItemUseTransaction itemTransaction = this.itemTransactions.poll();
-//        if (itemTransaction != null) {
-//            packet.getInputData().add(PlayerAuthInputData.PERFORM_ITEM_INTERACTION);
-//            packet.setItemUseTransaction(itemTransaction);
-//        }
-//        final ItemStackRequest stackRequest = this.stackRequests.poll();
-//        if (stackRequest != null) {
-//            packet.getInputData().add(PlayerAuthInputData.PERFORM_ITEM_STACK_REQUEST);
-//            packet.setItemStackRequest(stackRequest);
-//        }
-//        if (!this.blockInteractions.isEmpty()) {
-//            packet.getInputData().add(PlayerAuthInputData.PERFORM_BLOCK_ACTIONS);
-//            packet.getPlayerActions().addAll(this.blockInteractions);
-//            this.blockInteractions.clear();
-//        }
         return packet;
     }
 }

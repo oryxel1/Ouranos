@@ -25,6 +25,7 @@ public class Protocol527to503 extends ProtocolToProtocol {
         this.registerServerbound(PlayerAuthInputPacket.class, wrapped -> {
             final PlayerAuthInputPacket packet = (PlayerAuthInputPacket) wrapped.getPacket();
             packet.setInputInteractionModel(InputInteractionModel.CLASSIC);
+            System.out.println("Set!");
         });
 
         this.registerServerbound(PlayerActionPacket.class, wrapped -> {

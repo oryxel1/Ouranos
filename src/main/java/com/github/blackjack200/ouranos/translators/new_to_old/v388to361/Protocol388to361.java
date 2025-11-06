@@ -39,23 +39,6 @@ public class Protocol388to361 extends ProtocolToProtocol {
                 case START_FLYING -> storage.getInputData().add(PlayerAuthInputData.START_FLYING);
                 case STOP_FLYING -> storage.getInputData().add(PlayerAuthInputData.STOP_FLYING);
                 case JUMP -> storage.getInputData().add(PlayerAuthInputData.START_JUMPING);
-
-//                case START_BREAK, STOP_BREAK, ABORT_BREAK -> {
-//                    storage.setBreaking(actionType == PlayerActionType.START_BREAK);
-//
-//                    final PlayerBlockActionData data = new PlayerBlockActionData();
-//                    data.setAction(switch (actionType) {
-//                        case START_BREAK -> PlayerActionType.START_BREAK;
-//                        case STOP_BREAK -> PlayerActionType.STOP_SLEEP;
-//                        case ABORT_BREAK -> PlayerActionType.ABORT_BREAK;
-//                        default -> null;
-//                    });
-//                    data.setBlockPosition(packet.getBlockPosition());
-//                    data.setFace(packet.getFace());
-//                    storage.getBlockInteractions().add(data);
-//
-//                    wrapped.cancel();
-//                }
             }
         });
 
