@@ -2,7 +2,6 @@ package com.github.blackjack200.ouranos.translators.inventory;
 
 import com.github.blackjack200.ouranos.converter.TypeConverter;
 import com.github.blackjack200.ouranos.session.OuranosSession;
-import com.github.blackjack200.ouranos.session.translator.BaseTranslator;
 import org.cloudburstmc.protocol.bedrock.codec.v776.Bedrock_v776;
 import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemData;
 import org.cloudburstmc.protocol.bedrock.data.inventory.CreativeItemGroup;

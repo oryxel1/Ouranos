@@ -3,7 +3,6 @@ package com.github.blackjack200.ouranos.translators;
 import com.github.blackjack200.ouranos.converter.ChunkRewriteException;
 import com.github.blackjack200.ouranos.converter.TypeConverter;
 import com.github.blackjack200.ouranos.session.OuranosSession;
-import com.github.blackjack200.ouranos.session.translator.BaseTranslator;
 import com.github.blackjack200.ouranos.utils.SimpleBlockDefinition;
 import io.netty.buffer.AbstractByteBufAllocator;
 import io.netty.util.ReferenceCountUtil;

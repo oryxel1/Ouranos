@@ -1,7 +1,6 @@
 package com.github.blackjack200.ouranos.translators.movement;
 
 import com.github.blackjack200.ouranos.session.OuranosSession;
-import com.github.blackjack200.ouranos.session.translator.BaseTranslator;
 import org.cloudburstmc.math.vector.Vector2f;
 import org.cloudburstmc.math.vector.Vector3f;
 import org.cloudburstmc.protocol.bedrock.data.ClientPlayMode;

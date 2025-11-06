@@ -4,8 +4,6 @@ import com.github.blackjack200.ouranos.ProtocolInfo;
 import com.github.blackjack200.ouranos.converter.ItemTypeDictionary;
 import com.github.blackjack200.ouranos.converter.biome.BiomeDefinitionRegistry;
 import com.github.blackjack200.ouranos.session.OuranosSession;
-import com.github.blackjack200.ouranos.session.translator.BaseTranslator;
-import lombok.val;
 import org.cloudburstmc.nbt.NbtMap;
 import org.cloudburstmc.protocol.bedrock.codec.v419.Bedrock_v419;
 import org.cloudburstmc.protocol.bedrock.codec.v527.Bedrock_v527;

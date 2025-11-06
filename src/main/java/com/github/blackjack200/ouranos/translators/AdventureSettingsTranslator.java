@@ -1,7 +1,6 @@
 package com.github.blackjack200.ouranos.translators;
 
 import com.github.blackjack200.ouranos.session.OuranosSession;
-import com.github.blackjack200.ouranos.session.translator.BaseTranslator;
 import org.cloudburstmc.protocol.bedrock.codec.v527.Bedrock_v527;
 import org.cloudburstmc.protocol.bedrock.codec.v534.Bedrock_v534;
 import org.cloudburstmc.protocol.bedrock.codec.v554.Bedrock_v554;

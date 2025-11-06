@@ -1,7 +1,6 @@
 package com.github.blackjack200.ouranos.session.translator.impl;
 
 import com.github.blackjack200.ouranos.session.OuranosSession;
-import com.github.blackjack200.ouranos.session.translator.BaseTranslator;
 import com.github.blackjack200.ouranos.translators.inventory.InventoryTranslator;
 import com.github.blackjack200.ouranos.translators.movement.ClientMovementTranslator;
 import com.github.blackjack200.ouranos.translators.movement.MissingMovementTranslator;

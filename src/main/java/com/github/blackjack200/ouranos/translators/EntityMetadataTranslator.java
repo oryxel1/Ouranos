@@ -1,7 +1,6 @@
 package com.github.blackjack200.ouranos.translators;
 
 import com.github.blackjack200.ouranos.session.OuranosSession;
-import com.github.blackjack200.ouranos.session.translator.BaseTranslator;
 import com.github.blackjack200.ouranos.translators.storages.EntityMetadataStorage;
 import org.cloudburstmc.protocol.bedrock.data.entity.EntityDataMap;
 import org.cloudburstmc.protocol.bedrock.data.entity.EntityDataType;
