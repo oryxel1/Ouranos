@@ -1,4 +1,4 @@
-package com.github.blackjack200.ouranos.old_translators.storages;
+package com.github.blackjack200.ouranos.translators.new_to_old.v407to390.storage;
 
 import com.github.blackjack200.ouranos.session.OuranosSession;
 import com.github.blackjack200.ouranos.session.storage.OuranosStorage;
@@ -12,11 +12,11 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 @Getter
-public class ClientInventoryStorage extends OuranosStorage {
+public class ClientAuthInventoryStorage extends OuranosStorage {
     private final Map<Integer, List<ItemData>> inventories = new HashMap<>();
     private final Map<Integer, Consumer<List<ItemStackResponseContainer>>> stackResponses = new HashMap<>();
 
-    public ClientInventoryStorage(OuranosSession user) {
+    public ClientAuthInventoryStorage(OuranosSession user) {
         super(user);
     }
 }

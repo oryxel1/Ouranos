@@ -3,10 +3,7 @@ package com.github.blackjack200.ouranos.translators.new_to_old.v388to361;
 import com.github.blackjack200.ouranos.base.ProtocolToProtocol;
 import com.github.blackjack200.ouranos.session.OuranosSession;
 import com.github.blackjack200.ouranos.translators.new_to_old.v388to361.storage.ClientAuthMovementStorage;
-import org.cloudburstmc.protocol.bedrock.data.PlayerActionType;
-import org.cloudburstmc.protocol.bedrock.data.PlayerAuthInputData;
-import org.cloudburstmc.protocol.bedrock.data.PlayerBlockActionData;
-import org.cloudburstmc.protocol.bedrock.data.SoundEvent;
+import org.cloudburstmc.protocol.bedrock.data.*;
 import org.cloudburstmc.protocol.bedrock.packet.LevelSoundEventPacket;
 import org.cloudburstmc.protocol.bedrock.packet.MovePlayerPacket;
 import org.cloudburstmc.protocol.bedrock.packet.PlayerActionPacket;
@@ -20,6 +17,10 @@ public class Protocol388to361 extends ProtocolToProtocol {
     @Override
     protected void registerProtocol() {
         this.registerServerbound(PlayerActionPacket.class, wrapped -> {
+            if (wrapped.session().getAuthoritativeMovementMode() == AuthoritativeMovementMode.CLIENT) {
+                return;
+            }
+
             final ClientAuthMovementStorage storage = wrapped.session().get(ClientAuthMovementStorage.class);
 
             final PlayerActionPacket packet = (PlayerActionPacket) wrapped.getPacket();
@@ -59,6 +60,10 @@ public class Protocol388to361 extends ProtocolToProtocol {
         });
 
         this.registerServerbound(MovePlayerPacket.class, wrapped -> {
+            if (wrapped.session().getAuthoritativeMovementMode() == AuthoritativeMovementMode.CLIENT) {
+                return;
+            }
+
             final ClientAuthMovementStorage storage = wrapped.session().get(ClientAuthMovementStorage.class);
 
             final MovePlayerPacket packet = (MovePlayerPacket) wrapped.getPacket();
@@ -69,6 +74,10 @@ public class Protocol388to361 extends ProtocolToProtocol {
         });
 
         this.registerServerbound(LevelSoundEventPacket.class, wrapped -> {
+            if (wrapped.session().getAuthoritativeMovementMode() == AuthoritativeMovementMode.CLIENT) {
+                return;
+            }
+
             final LevelSoundEventPacket packet = (LevelSoundEventPacket) wrapped.getPacket();
 
             if (packet.getSound() == SoundEvent.ATTACK_NODAMAGE) {

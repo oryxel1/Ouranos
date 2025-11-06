@@ -9,6 +9,7 @@ import com.github.blackjack200.ouranos.translators.GlobalWorldTranslator;
 import com.github.blackjack200.ouranos.session.storage.OuranosStorage;
 import lombok.Getter;
 import lombok.Setter;
+import org.cloudburstmc.protocol.bedrock.data.AuthoritativeMovementMode;
 import org.cloudburstmc.protocol.bedrock.packet.*;
 
 import java.util.*;
@@ -19,6 +20,11 @@ public abstract class OuranosSession {
     @Getter
     private final int protocolId, targetVersion;
     public int prevFormId;
+
+    @Getter
+    private boolean serverAuthoritativeInventories;
+    @Getter
+    private AuthoritativeMovementMode authoritativeMovementMode;
 
     private final Map<Class<?>, OuranosStorage> storages = new HashMap<>();
 
@@ -121,6 +127,8 @@ public abstract class OuranosSession {
         if (packet instanceof StartGamePacket startGamePacket) {
             this.uniqueId = startGamePacket.getUniqueEntityId();
             this.runtimeId = startGamePacket.getRuntimeEntityId();
+            this.serverAuthoritativeInventories = startGamePacket.isInventoriesServerAuthoritative();
+            this.authoritativeMovementMode = startGamePacket.getAuthoritativeMovementMode();
         }
 
         final WrappedBedrockPacket wrapped = new WrappedBedrockPacket(this, this.getTargetVersion(), this.getProtocolId(),  packet, false);
