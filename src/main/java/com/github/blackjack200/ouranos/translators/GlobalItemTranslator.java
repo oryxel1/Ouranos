@@ -14,7 +14,6 @@ import org.cloudburstmc.protocol.bedrock.packet.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 // These will be translated directly instead of passing through multiple translators.
 public class GlobalItemTranslator extends ProtocolToProtocol {
@@ -84,8 +83,11 @@ public class GlobalItemTranslator extends ProtocolToProtocol {
             final CreativeContentPacket packet = (CreativeContentPacket) wrapped.getPacket();
             final int input = wrapped.getInput(), output = wrapped.getOutput();
 
-            packet.getContents().replaceAll(itemData -> TypeConverter.translateCreativeItemData(input, output, itemData));
-            packet.getGroups().replaceAll(group -> group.toBuilder().icon(TypeConverter.translateItemData(input, output, group.getIcon())).build());
+            // Temp fix for now.
+            packet.getContents().clear();
+            packet.getGroups().clear();
+//            packet.getContents().replaceAll(itemData -> TypeConverter.translateCreativeItemData(input, output, itemData));
+//            packet.getGroups().replaceAll(group -> group.toBuilder().icon(TypeConverter.translateItemData(input, output, group.getIcon())).build());
         });
 
         this.registerClientbound(AddItemEntityPacket.class, wrapped -> {
