@@ -170,6 +170,8 @@ public class Protocol407to390 extends ProtocolToProtocol {
                     storage.getInventories().get(b.getSource().getContainerId()).set(b.getSlot(), source);
                 });
             }
+
+            wrapped.setPacket(stackPacket);
         });
     }
 
