@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ItemRegistryUtil {
     public static SimpleDefinitionRegistry<ItemDefinition> toRegistry(final List<ItemDefinition> definitions) {
-        SimpleDefinitionRegistry.Builder<ItemDefinition> builder = SimpleDefinitionRegistry.<org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition>builder()
+        SimpleDefinitionRegistry.Builder<ItemDefinition> builder = SimpleDefinitionRegistry.<ItemDefinition>builder()
                 .add(new SimpleItemDefinition("minecraft:empty", 0, false));
 
         for (ItemDefinition definition : definitions) {

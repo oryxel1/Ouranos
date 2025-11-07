@@ -1,12 +1,23 @@
 package com.github.blackjack200.ouranos.translators.new_to_old.v388to361;
 
 import com.github.blackjack200.ouranos.base.ProtocolToProtocol;
+import com.github.blackjack200.ouranos.converter.BlockStateDictionary;
+import com.github.blackjack200.ouranos.data.LegacyBlockIdToStringIdMap;
+import com.github.blackjack200.ouranos.data.bedrock.GlobalBlockDataHandlers;
+import com.github.blackjack200.ouranos.data.bedrock.block.BlockIdMetaUpgrader;
 import com.github.blackjack200.ouranos.session.OuranosSession;
 import com.github.blackjack200.ouranos.translators.new_to_old.v388to361.storage.ClientAuthMovementStorage;
+import org.cloudburstmc.nbt.NbtList;
+import org.cloudburstmc.nbt.NbtMap;
+import org.cloudburstmc.nbt.NbtType;
 import org.cloudburstmc.protocol.bedrock.data.*;
 import org.cloudburstmc.protocol.bedrock.packet.LevelSoundEventPacket;
 import org.cloudburstmc.protocol.bedrock.packet.MovePlayerPacket;
 import org.cloudburstmc.protocol.bedrock.packet.PlayerActionPacket;
+import org.cloudburstmc.protocol.bedrock.packet.StartGamePacket;
+
+import java.util.Map;
+import java.util.Objects;
 
 public class Protocol388to361 extends ProtocolToProtocol {
     @Override
@@ -67,6 +78,21 @@ public class Protocol388to361 extends ProtocolToProtocol {
                 final ClientAuthMovementStorage storage = wrapped.session().get(ClientAuthMovementStorage.class);
                 storage.getInputData().add(PlayerAuthInputData.MISSED_SWING);
             }
+        });
+
+        this.registerServerbound(StartGamePacket.class, wrapped -> {
+            final StartGamePacket packet = (StartGamePacket) wrapped.getPacket();
+
+            packet.setBlockPalette(new NbtList<>(NbtType.COMPOUND, BlockStateDictionary.getInstance(wrapped.getOutput()).getKnownStates().stream().map((e) -> {
+                BlockIdMetaUpgrader.Block blk = GlobalBlockDataHandlers.getUpgrader().fromLatestStateHash(e.latestStateHash());
+                short legacyId = (short) (Objects.requireNonNullElse(LegacyBlockIdToStringIdMap.getInstance().fromString(wrapped.getOutput(), e.name()), 255) & 0xfffffff);
+                return NbtMap.builder().putCompound("block", NbtMap.fromMap(
+                        Map.of(
+                                "name", blk.id(),
+                                "meta", (short) blk.meta(),
+                                "id", legacyId
+                        ))).build();
+            }).toList()));
         });
     }
 }
