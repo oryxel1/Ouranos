@@ -31,26 +31,26 @@ public abstract class SpecialOuranosSession extends OuranosSession {
         this.serverCodecHelper.setBlockDefinitions(new BlockDictionaryRegistry(targetVersion));
     }
 
-    public final boolean translateClientbound(ByteBuf input, ByteBuf output, int id) {
+    public final Class<? extends BedrockPacket> translateClientbound(ByteBuf input, ByteBuf output, int id) {
         BedrockPacket packet = this.serverCodec.tryDecode(this.serverCodecHelper, input, id);
         packet = this.translateClientbound(packet);
-        if (packet == null) {
-            return false;
+        if (packet == null || this.clientCodec.getPacketDefinition(packet.getClass()) == null) {
+            return null;
         }
 
         this.clientCodec.tryEncode(this.clientCodecHelper, output, packet);
-        return true;
+        return packet.getClass();
     }
 
-    public final boolean translateServerbound(ByteBuf input, ByteBuf output, int id) {
+    public final Class<? extends BedrockPacket> translateServerbound(ByteBuf input, ByteBuf output, int id) {
         BedrockPacket packet = this.clientCodec.tryDecode(this.clientCodecHelper, input, id);
         packet = this.translateServerbound(packet);
-        if (packet == null) {
-            return false;
+        if (packet == null || this.serverCodec.getPacketDefinition(packet.getClass()) == null) {
+            return null;
         }
 
         this.serverCodec.tryEncode(this.serverCodecHelper, output, packet);
-        return true;
+        return packet.getClass();
     }
 
     public final void encodeClient(final BedrockPacket packet, final ByteBuf output) {
