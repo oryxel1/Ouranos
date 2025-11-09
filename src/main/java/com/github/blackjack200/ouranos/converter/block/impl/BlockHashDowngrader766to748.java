@@ -39,6 +39,7 @@ public class BlockHashDowngrader766to748 {
             case "minecraft:stripped_pale_oak_wood" -> BlockEntryUtil.build("minecraft:stripped_birch_wood", entry.rawState());
             case "minecraft:resin_clump" -> BlockEntryUtil.build("minecraft:pink_petals", NbtMap.builder().putString("minecraft:cardinal_direction", "south").putInt("growth", 2).build());
             case "minecraft:resin_block" -> BlockEntryUtil.build("minecraft:copper_block", NbtMap.EMPTY);
+            case "minecraft:pale_moss_carpet" -> BlockEntryUtil.build("minecraft:moss_carpet", NbtMap.EMPTY);
             default -> entry;
         };
     }
