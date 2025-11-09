@@ -30,7 +30,8 @@ public class BlockHashDowngrader766to748 {
                 yield BlockEntryUtil.build("minecraft:vault", builder.build());
             }
             case "minecraft:closed_eyeblossom", "minecraft:open_eyeblossom" -> BlockEntryUtil.build("minecraft:white_tulip", NbtMap.EMPTY);
-            case "minecraft:pale_hanging_moss" -> BlockEntryUtil.build("minecraft:fire_coral_fan", NbtMap.builder().putInt("coral_fan_direction", 0).build());
+            // Yep, air looks the best xD, what did you say? not practical? then you can cry about it for using an old version LOL.
+            case "minecraft:pale_hanging_moss" -> BlockEntryUtil.build("minecraft:air", NbtMap.EMPTY);
             case "minecraft:pale_moss_block" -> BlockEntryUtil.build("minecraft:dead_tube_coral_block", NbtMap.EMPTY);
             case "minecraft:pale_oak_leaves" -> BlockEntryUtil.build("minecraft:mangrove_leaves", entry.rawState());
             case "minecraft:pale_oak_log" -> BlockEntryUtil.build("minecraft:mangrove_log", entry.rawState());
