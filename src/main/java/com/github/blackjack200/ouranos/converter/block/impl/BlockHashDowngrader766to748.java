@@ -19,7 +19,7 @@ public class BlockHashDowngrader766to748 {
         return switch (entry.name()) {
             case "minecraft:creaking_heart" -> {
                 final NbtMapBuilder builder = NbtMap.builder();
-                builder.putInt("ominous", Math.max(Math.min(1, entry.rawState().getInt("natural")), 0));
+                builder.putInt("ominous", 0);
                 builder.putString("vault_state", switch (entry.rawState().getString("creaking_heart_state")) {
                     case "dormant" -> "active";
                     case "awake" -> "unlocking";

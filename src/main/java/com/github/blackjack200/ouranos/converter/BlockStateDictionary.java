@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class BlockStateDictionary extends AbstractMapping {
     public static final class Dictionary {
+        private final Map<Integer, BlockEntry> currentStateHashToEntry;
         private final Map<Integer, BlockEntry> latestStateHashToEntry;
         private final Map<Integer, Integer> latestStateHashToCurrent;
         private final Map<Integer, Integer> latestStateHashToRuntimeId;
@@ -24,12 +25,11 @@ public final class BlockStateDictionary extends AbstractMapping {
         @Getter
         private Integer fallbackRuntimeId;
         @Getter
-        private Integer fallbackLatestStateHash;
-        @Getter
         private final List<BlockEntry> knownStates;
 
         public Dictionary(Int2ObjectRBTreeMap<BlockEntry> states) {
             this.knownStates = states.values().stream().toList();
+            this.currentStateHashToEntry = new Int2ObjectRBTreeMap<>();
             this.latestStateHashToEntry = new Int2ObjectRBTreeMap<>();
             this.latestStateHashToCurrent = new Int2ObjectRBTreeMap<>();
             this.latestStateHashToRuntimeId = new Int2ObjectRBTreeMap<>();
@@ -43,7 +43,6 @@ public final class BlockStateDictionary extends AbstractMapping {
             for (val v : this.latestStateHashToEntry.entrySet()) {
                 if (v.getValue().name.equals("minecraft:info_update")) {
                     this.fallbackRuntimeId = this.toRuntimeId(v.getKey());
-                    this.fallbackLatestStateHash = v.getValue().latestStateHash;
                     break;
                 }
             }
@@ -55,6 +54,7 @@ public final class BlockStateDictionary extends AbstractMapping {
         private void register(int runtimeId, BlockEntry entry) {
             this.latestStateHashToEntry.put(entry.latestStateHash, entry);
             this.latestStateHashToCurrent.put(entry.latestStateHash, entry.currentStateHash);
+            this.currentStateHashToEntry.put(entry.currentStateHash, entry);
 
             this.latestStateHashToRuntimeId.put(entry.latestStateHash, runtimeId);
             this.runtimeToLatestStateHash.put(runtimeId, entry.latestStateHash);
@@ -77,7 +77,7 @@ public final class BlockStateDictionary extends AbstractMapping {
         }
 
         public BlockEntry toBlockStateHash(int hashId) {
-            return this.latestStateHashToEntry.get(hashId);
+            return this.currentStateHashToEntry.get(hashId);
         }
 
         /**

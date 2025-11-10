@@ -18,6 +18,7 @@ import org.cloudburstmc.protocol.bedrock.codec.v361.Bedrock_v361;
 import org.cloudburstmc.protocol.bedrock.codec.v465.Bedrock_v465;
 import org.cloudburstmc.protocol.bedrock.codec.v475.Bedrock_v475;
 import org.cloudburstmc.protocol.bedrock.codec.v503.Bedrock_v503;
+import org.cloudburstmc.protocol.bedrock.codec.v582.Bedrock_v582;
 import org.cloudburstmc.protocol.bedrock.data.definitions.BlockDefinition;
 import org.cloudburstmc.protocol.bedrock.data.definitions.ItemDefinition;
 import org.cloudburstmc.protocol.bedrock.data.definitions.SimpleItemDefinition;
@@ -253,16 +254,18 @@ public class TypeConverter {
         val inputDict = BlockStateDictionary.getInstance(input);
         val outputDict = BlockStateDictionary.getInstance(output);
 
+        boolean outputHashes = idAreHashes && output >= Bedrock_v582.CODEC.getProtocolVersion();
+
         BlockStateDictionary.Dictionary.BlockEntry entry = idAreHashes ? inputDict.toBlockStateHash(blockRuntimeId) : inputDict.toBlockState(blockRuntimeId);
         if (entry == null) {
-            return idAreHashes ? outputDict.getFallbackLatestStateHash() : outputDict.getFallbackRuntimeId();
+            return outputHashes ? -2 : outputDict.getFallbackRuntimeId();
         }
 
         Integer stateHash = BlockHashDowngrader.downgradeHash(entry, input, output);
         if (stateHash == null) { // Not possible, but why not make it safe :)
-            return idAreHashes ? outputDict.getFallbackLatestStateHash() : outputDict.getFallbackRuntimeId();
+            return outputHashes ? -2 : outputDict.getFallbackRuntimeId();
         }
-        if (idAreHashes) {
+        if (outputHashes) {
             return stateHash;
         }
 

@@ -35,6 +35,7 @@ public abstract class SpecialOuranosSession extends OuranosSession {
     public void setHashedBlockIds(boolean hashedBlockIds) {
         this.clientCodecHelper.setBlockDefinitions(new BlockDictionaryRegistry(this.getProtocolId(), hashedBlockIds));
         this.serverCodecHelper.setBlockDefinitions(new BlockDictionaryRegistry(this.getTargetVersion(), hashedBlockIds));
+        super.setHashedBlockIds(hashedBlockIds);
     }
 
     public final Integer translateClientbound(ByteBuf input, ByteBuf output, int id) {
