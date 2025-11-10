@@ -6,7 +6,7 @@ import org.cloudburstmc.nbt.NbtMap;
 import static com.github.blackjack200.ouranos.converter.BlockStateDictionary.Dictionary.BlockEntry;
 
 @UtilityClass
-public class BlockHashDowngrader786to776 {
+public class BlockStateDowngrader786to776 {
     public BlockEntry downgradeState(BlockEntry entry) {
         return switch (entry.name()) {
             case "minecraft:leaf_litter", "minecraft:wildflowers" -> BlockEntryUtil.build("minecraft:pink_petals", entry.rawState());

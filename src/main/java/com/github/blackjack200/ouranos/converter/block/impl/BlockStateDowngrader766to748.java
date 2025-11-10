@@ -8,7 +8,7 @@ import org.cloudburstmc.nbt.NbtMapBuilder;
 import static com.github.blackjack200.ouranos.converter.BlockStateDictionary.Dictionary.BlockEntry;
 
 @UtilityClass
-public class BlockHashDowngrader766to748 {
+public class BlockStateDowngrader766to748 {
     public BlockEntry downgradeState(BlockEntry entry) {
         if (entry.name().startsWith("minecraft:resin_brick")) {
             return BlockEntryUtil.build(entry.name().replace("resin_brick", "brick"), entry.rawState());

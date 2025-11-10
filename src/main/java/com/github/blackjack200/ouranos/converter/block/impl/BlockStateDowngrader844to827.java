@@ -8,7 +8,7 @@ import org.cloudburstmc.nbt.NbtMapBuilder;
 import static com.github.blackjack200.ouranos.converter.BlockStateDictionary.Dictionary.BlockEntry;
 
 @UtilityClass
-public class BlockHashDowngrader844to827 {
+public class BlockStateDowngrader844to827 {
     public BlockEntry downgradeState(BlockEntry entry) {
         if (entry.name().endsWith("_shelf")) {
             return BlockEntryUtil.build(entry.name().replace("shelf", "wood"), NbtMap.builder().putString("pillar_axis", "x").build());
